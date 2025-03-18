@@ -15,6 +15,7 @@ const MAP_WIDTH = 90 // cm
 const MAP_HEIGHT = MAP_WIDTH / MAP_ASPECT_RATIO
 
 export const name = "Test Map"
+
 export const create = (): MapSpec => ({
     name,
     width: 90, // cm
@@ -23,7 +24,6 @@ export const create = (): MapSpec => ({
     spawns: [
         {
             pos: { x: 20.5, y: 18 },
-            //pos: { x: 21, y: 45 / MAP_ASPECT_RATIO },
             angle: 90,
         },
         {
@@ -32,105 +32,209 @@ export const create = (): MapSpec => ({
         },
     ],
     entities: [
-        // Line-following path
+        // Outer Walls
+        // Top wall: horizontal block spanning full width, 5 cm thick
         {
             ...defaultEntity(),
-            pos: { x: 0, y: 0 },
+            pos: { x: MAP_WIDTH / 2, y: 2.5 },
             angle: 0,
             physics: defaultStaticPhysics(),
             shapes: [
                 {
-                    ...defaultPathShape(),
+                    ...defaultBoxShape(),
+                    size: { x: MAP_WIDTH, y: 5 },
                     offset: { x: 0, y: 0 },
                     angle: 0,
-                    roles: ["follow-line"],
-                    width: 3, // cm
-                    stepSize: 0.1,
-                    closed: true,
-                    verts: [
-                        { x: 10, y: MAP_HEIGHT / 2 + 8 },
-                        { x: 10, y: MAP_HEIGHT / 2 - 8 },
-                        { x: 20, y: 19 },
-                        { x: MAP_WIDTH / 2, y: 22 },
-                        { x: MAP_WIDTH - 20, y: 19 },
-                        { x: MAP_WIDTH - 10, y: MAP_HEIGHT / 2 - 8 },
-                        { x: MAP_WIDTH - 10, y: MAP_HEIGHT / 2 + 8 },
-                        { x: MAP_WIDTH - 20, y: MAP_HEIGHT - 19 },
-                        { x: MAP_WIDTH / 2, y: MAP_HEIGHT - 22 },
-                        { x: 20, y: MAP_HEIGHT - 19 },
-                    ],
-                    brush: {
-                        ...defaultColorBrush(),
-                        fillColor: "#555555",
-                        zIndex: -5,
-                    },
-                    physics: {
-                        ...defaultShapePhysics(),
-                        sensor: true,
-                    },
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
                 },
             ],
         },
-        // Box obstacles
+        // Bottom wall
         {
             ...defaultEntity(),
-            pos: { x: MAP_WIDTH / 2, y: MAP_HEIGHT / 2 },
+            pos: { x: MAP_WIDTH / 2, y: MAP_HEIGHT - 2.5 },
             angle: 0,
-            physics: {
-                ...defaultDynamicPhysics(),
-                linearDamping: 10,
-                angularDamping: 10,
-            },
+            physics: defaultStaticPhysics(),
             shapes: [
                 {
                     ...defaultBoxShape(),
-                    offset: { x: -8, y: 0 },
-                    size: { x: 10, y: 5 },
-                    angle: 90,
-                    roles: ["obstacle", "mouse-target"],
-                    brush: {
-                        ...defaultColorBrush(),
-                        fillColor: pickRandom(Object.values(MICROBIT_COLORS)),
-                        borderColor: "#444444",
-                        borderWidth: 0.25,
-                    },
-                    physics: {
-                        ...defaultShapePhysics(),
-                        friction: 0.1,
-                        restitution: 0.5,
-                        density: 3,
-                    },
+                    size: { x: MAP_WIDTH, y: 5 },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
                 },
             ],
         },
+        // Left wall
         {
             ...defaultEntity(),
-            pos: { x: MAP_WIDTH / 2, y: MAP_HEIGHT / 2 },
+            pos: { x: 2.5, y: MAP_HEIGHT / 2 },
             angle: 0,
-            physics: {
-                ...defaultDynamicPhysics(),
-                linearDamping: 10,
-                angularDamping: 10,
-            },
+            physics: defaultStaticPhysics(),
             shapes: [
                 {
                     ...defaultBoxShape(),
-                    offset: { x: 8, y: 0 },
-                    size: { x: 10, y: 5 },
-                    angle: 90,
-                    roles: ["obstacle", "mouse-target"],
-                    brush: {
-                        ...defaultColorBrush(),
-                        fillColor: pickRandom(Object.values(MICROBIT_COLORS)),
-                        borderColor: "#444444",
-                        borderWidth: 0.25,
-                    },
-                    physics: {
-                        ...defaultShapePhysics(),
-                        friction: 0.1,
-                        restitution: 0.5,
-                        density: 3,
-                    },
+                    size: { x: 5, y: MAP_HEIGHT },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
+                },
+            ],
+        },
+        // Right wall
+        {
+            ...defaultEntity(),
+            pos: { x: MAP_WIDTH - 2.5, y: MAP_HEIGHT / 2 },
+            angle: 0,
+            physics: defaultStaticPhysics(),
+            shapes: [
+                {
+                    ...defaultBoxShape(),
+                    size: { x: 5, y: MAP_HEIGHT },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
+                },
+            ],
+        },
+
+        // Internal Maze Walls
+        // For simplicity, we add a few wall segments to create corridors and dead-ends.
+        // Left vertical wall (with a gap in the middle)
+        // Top segment:
+        {
+            ...defaultEntity(),
+            pos: { x: 45 - 15, y: MAP_HEIGHT / 2 - ((MAP_HEIGHT / 2 - 10) / 2) },
+            angle: 0,
+            physics: defaultStaticPhysics(),
+            shapes: [
+                {
+                    ...defaultBoxShape(),
+                    size: { x: 5, y: (MAP_HEIGHT / 2) - 10 },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
+                },
+            ],
+        },
+        // Bottom segment:
+        {
+            ...defaultEntity(),
+            pos: { x: 45 - 15, y: MAP_HEIGHT / 2 + ((MAP_HEIGHT / 2 - 10) / 2) },
+            angle: 0,
+            physics: defaultStaticPhysics(),
+            shapes: [
+                {
+                    ...defaultBoxShape(),
+                    size: { x: 5, y: (MAP_HEIGHT / 2) - 10 },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
+                },
+            ],
+        },
+        // Right vertical wall (with gap)
+        // Top segment:
+        {
+            ...defaultEntity(),
+            pos: { x: 45 + 15, y: MAP_HEIGHT / 2 - ((MAP_HEIGHT / 2 - 10) / 2) },
+            angle: 0,
+            physics: defaultStaticPhysics(),
+            shapes: [
+                {
+                    ...defaultBoxShape(),
+                    size: { x: 5, y: (MAP_HEIGHT / 2) - 10 },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
+                },
+            ],
+        },
+        // Bottom segment:
+        {
+            ...defaultEntity(),
+            pos: { x: 45 + 15, y: MAP_HEIGHT / 2 + ((MAP_HEIGHT / 2 - 10) / 2) },
+            angle: 0,
+            physics: defaultStaticPhysics(),
+            shapes: [
+                {
+                    ...defaultBoxShape(),
+                    size: { x: 5, y: (MAP_HEIGHT / 2) - 10 },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
+                },
+            ],
+        },
+        // Horizontal walls splitting corridors
+        // Upper horizontal wall
+        {
+            ...defaultEntity(),
+            pos: { x: 45, y: MAP_HEIGHT / 2 - 15 },
+            angle: 0,
+            physics: defaultStaticPhysics(),
+            shapes: [
+                {
+                    ...defaultBoxShape(),
+                    size: { x: 20, y: 5 },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
+                },
+            ],
+        },
+        // Lower horizontal wall
+        {
+            ...defaultEntity(),
+            pos: { x: 45, y: MAP_HEIGHT / 2 + 15 },
+            angle: 0,
+            physics: defaultStaticPhysics(),
+            shapes: [
+                {
+                    ...defaultBoxShape(),
+                    size: { x: 20, y: 5 },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["block"],
+                },
+            ],
+        },
+
+        // Center Goal: a small black square in the center that the robot must reach.
+        {
+            ...defaultEntity(),
+            pos: { x: 45, y: MAP_HEIGHT / 2 },
+            angle: 0,
+            physics: defaultStaticPhysics(),
+            shapes: [
+                {
+                    ...defaultBoxShape(),
+                    size: { x: 10, y: 10 },
+                    offset: { x: 0, y: 0 },
+                    angle: 0,
+                    physics: defaultShapePhysics(),
+                    brush: { ...defaultColorBrush(), fillColor: "#000000" },
+                    roles: ["goal"],
                 },
             ],
         },
