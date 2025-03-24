@@ -1,6 +1,6 @@
 {
-    "name": "microbit-robot",
-    "version": "2.7.4",
+    "name": "microbit-robot-maze",
+    "version": "1.0.0",
     "dependencies": {
         "core": "*",
         "radio": "*",
