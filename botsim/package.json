@@ -1,8 +1,8 @@
 {
-  "name": "@microbit-robot/botsim",
+  "name": "@microbit-robot-maze/botsim",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/bradleelee/microbit-robot-maze/",
+  "homepage": "https://github.com/bradleelee/microbit-robot-maze/botsim",
   "dependencies": {
     "@pixi-essentials/gradients": "^1.0.1",
     "@types/node": "^16.18.61",
