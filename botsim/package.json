@@ -2,7 +2,7 @@
   "name": "@microbit-robot/botsim",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://microsoft.github.io/microbit-robot/",
+  "homepage": "https://github.com/bradleelee/microbit-robot-maze/",
   "dependencies": {
     "@pixi-essentials/gradients": "^1.0.1",
     "@types/node": "^16.18.61",
