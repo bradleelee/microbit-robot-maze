@@ -1,0 +1,11 @@
+{
+  "files": {
+    "main.css": "/bradleelee/microbit-robot-maze/botsim/static/css/main.06467040.css",
+    "main.js": "/bradleelee/microbit-robot-maze/botsim/static/js/main.1de699dd.js",
+    "index.html": "/bradleelee/microbit-robot-maze/botsim/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.06467040.css",
+    "static/js/main.1de699dd.js"
+  ]
+}
